@@ -1,19 +1,3 @@
-/*
- * File:      BLEClient.ino
- * Function:  BLEコネクション通信のセントラルとして動作します。
- *            準備システムなので名称をBLEClientとし、単一方向の受信だけで送信機能はありません。
- *            目的のデバイスが見つかると接続して、定期的にサーバーから送信される計測データを受信
- *            してシリアルモニターに詳細を表示し、OLEDディスプレイに温度と湿度を表示します（OLED
- *            への表示はデバイス識別番号1のもののみ）。
- *            サーバーからの異常情報をキャッチするとLEDを点灯して知らせ、プッシュボタンを押すと
- *            消灯します。
- * Date:      2019/04/25
- * Author:    M.Ono
- * 
- * Hardware   MCU:  ESP32 (DOIT ESP32 DEVKIT V1 Board)
- *            ブレッドボードに上記開発ボードとOLEDディスプレイ、プッシュボタン、LEDを配線
- *            OLEDディスプレイはSSD1306  (0.96inch 128x64dot) 
- */
 #include <BLEDevice.h>
 #include <Wire.h>                   // For I2C interface
 #include <Arduino.h>
