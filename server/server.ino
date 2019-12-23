@@ -133,7 +133,7 @@ void doPrepare(BLEService *pService)
 /*  主処理ロジック  */
 void doMainProcess()
 {
-	// ボタンを読み取る
+	// データを読み取る
 	while (Serial.available() > 0)
 	{
 
@@ -154,8 +154,6 @@ void doMainProcess()
 
 			if (incomeByte[5] == sum && incomeByte[6] == 255)
 			{
-
-				// Serial.print("Data OK! |");
 				for (int k = 0; k < 7; k++)
 				{
 					Serial.print(incomeByte[k]);
@@ -163,7 +161,7 @@ void doMainProcess()
 				}
 
 				Serial.print(" Vo=");
-				float vo = (incomeByte[1] * 256.0 + incomeByte[2]) / 1024.0 * 5.00;
+				float vo = (incomeByte[1] * 256.0 + incomeByte[2]) / 3072.0 * 5.00;
 				Serial.print(vo, 3);
 				Serial.print("v | ");
 				float c = vo * 700;
