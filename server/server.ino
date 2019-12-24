@@ -3,7 +3,9 @@
 #include <BLE2902.h>
 #include <Ticker.h> // タイマー割り込み用
 #include <Arduino.h>
-
+#include <FS.h>
+#include <SD.h>
+#include <SPI.h>
 /* 基本属性定義  */
 #define DEVICE_NAME "ESP32" // デバイス名
 #define SPI_SPEED 115200	// SPI通信速度
@@ -48,6 +50,68 @@ struct tmpSignal signaldata = {0xff, 0x00};
 Ticker ticker;
 bool bReadyTicker = false;
 const int iIntervalTime = 1; // 計測間隔（10秒）
+
+/* SDカードに読み取と記錄用 */
+void readFile(fs::FS &fs, const char *path)
+{
+	Serial.printf("Reading file: %s\n", path);
+
+	File file = fs.open(path);
+	if (!file)
+	{
+		Serial.println("Failed to open file for reading");
+		return;
+	}
+
+	Serial.print("Read from file: ");
+	while (file.available())
+	{
+		Serial.write(file.read());
+	}
+	file.close();
+}
+
+void writeFile(fs::FS &fs, const char *path, const char *message)
+{
+	Serial.printf("Writing file: %s\n", path);
+
+	File file = fs.open(path, FILE_WRITE);
+	if (!file)
+	{
+		Serial.println("Failed to open file for writing");
+		return;
+	}
+	if (file.print(message))
+	{
+		Serial.println("File written");
+	}
+	else
+	{
+		Serial.println("Write failed");
+	}
+	file.close();
+}
+
+void appendFile(fs::FS &fs, const char *path, const char *message)
+{
+	Serial.printf("Appending to file: %s\n", path);
+
+	File file = fs.open(path, FILE_APPEND);
+	if (!file)
+	{
+		Serial.println("Failed to open file for appending");
+		return;
+	}
+	if (file.print(message))
+	{
+		Serial.println("Message appended");
+	}
+	else
+	{
+		Serial.println("Append failed");
+	}
+	file.close();
+}
 
 /*********************< Callback classes and functions >**********************/
 // 接続・切断時コールバック
@@ -118,6 +182,41 @@ void doInitialize()
 	// pinMode(buttonPin, INPUT);
 	// pinMode(ledPin, OUTPUT);
 	// digitalWrite(ledPin, HIGH);
+	if (!SD.begin())
+	{
+		Serial.println("Card Mount Failed");
+		return;
+	}
+	uint8_t cardType = SD.cardType();
+
+	if (cardType == CARD_NONE)
+	{
+		Serial.println("No SD card attached");
+		return;
+	}
+
+	Serial.print("SD Card Type: ");
+	if (cardType == CARD_MMC)
+	{
+		Serial.println("MMC");
+	}
+	else if (cardType == CARD_SD)
+	{
+		Serial.println("SDSC");
+	}
+	else if (cardType == CARD_SDHC)
+	{
+		Serial.println("SDHC");
+	}
+	else
+	{
+		Serial.println("UNKNOWN");
+	}
+
+	uint64_t cardSize = SD.cardSize() / (1024 * 1024);
+	Serial.printf("SD Card Size: %lluMB\n", cardSize);
+
+	writeFile(SD, "/hello.txt", "Record Start:\n");
 }
 
 /*  準備処理  */
@@ -171,6 +270,10 @@ void doMainProcess()
 				Serial.print("ug/m3 ");
 				Serial.println();
 				data.pmData = (double)c;
+				char buff[200];
+				sprintf(buff)
+				appendFile(SD, "/hello.txt", );
+				readFile(SD, "/hello.txt");
 			}
 			else
 			{
