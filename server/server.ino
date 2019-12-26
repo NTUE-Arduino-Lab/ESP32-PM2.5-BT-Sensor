@@ -34,6 +34,7 @@ struct tmpData
 };
 struct tmpData data;
 double bandWidth = WIDTH_3; //位寬調整(訊號佔據的寬度)
+float coef = 700; //係數誤差調整
 int incomeByte[7];
 int sensorData;
 int z = 0;
@@ -269,7 +270,7 @@ void doMainProcess()
 				float vo = (incomeByte[1] * 256.0 + incomeByte[2]) / bandWidth * 5.00;
 				Serial.print(vo, 3);
 				Serial.print("v | ");
-				float c = vo * 700;
+				float c = vo * coef;
 
 				Serial.print(" PM2.5 = ");
 				Serial.print(c, 2);
