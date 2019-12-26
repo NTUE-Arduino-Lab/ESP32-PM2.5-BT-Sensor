@@ -9,6 +9,10 @@
 /* 基本属性定義  */
 #define DEVICE_NAME "ESP32" // デバイス名
 #define SPI_SPEED 115200	// SPI通信速度
+#define WIDTH_1 1024.0 
+#define WIDTH_2 2048.0
+#define WIDTH_3 3072.0
+#define WIDTH_4 4096.0
 
 /* シグナル種別 */
 #define SIGNAL_ERROR 'E' // (Error:異常発生)
@@ -29,6 +33,7 @@ struct tmpData
 	
 };
 struct tmpData data;
+double bandWidth = WIDTH_3; //誤差調整
 int incomeByte[7];
 int sensorData;
 int z = 0;
@@ -261,7 +266,7 @@ void doMainProcess()
 				}
 
 				Serial.print(" Vo=");
-				float vo = (incomeByte[1] * 256.0 + incomeByte[2]) / 3072.0 * 5.00;
+				float vo = (incomeByte[1] * 256.0 + incomeByte[2]) / bandWidth * 5.00;
 				Serial.print(vo, 3);
 				Serial.print("v | ");
 				float c = vo * 700;
