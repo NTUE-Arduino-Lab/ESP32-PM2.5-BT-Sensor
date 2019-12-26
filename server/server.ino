@@ -26,6 +26,7 @@ bool bAbnormal = false;				  // デバイス異常判定
 struct tmpData
 { // 計測データ
 	double pmData;
+	
 };
 struct tmpData data;
 int incomeByte[7];
@@ -270,10 +271,10 @@ void doMainProcess()
 				Serial.print("ug/m3 ");
 				Serial.println();
 				data.pmData = (double)c;
-				char buff[200];
-				sprintf(buff)
-				appendFile(SD, "/hello.txt", );
-				readFile(SD, "/hello.txt");
+				// char buff[200];
+				// sprintf(buff,)
+				// appendFile(SD, "/hello.txt", );
+				// readFile(SD, "/hello.txt");
 			}
 			else
 			{
