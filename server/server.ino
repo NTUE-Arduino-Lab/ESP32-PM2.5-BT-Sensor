@@ -33,7 +33,7 @@ struct tmpData
 	
 };
 struct tmpData data;
-double bandWidth = WIDTH_3; //誤差調整
+double bandWidth = WIDTH_3; //位寬調整(訊號佔據的寬度)
 int incomeByte[7];
 int sensorData;
 int z = 0;
