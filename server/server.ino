@@ -26,6 +26,7 @@ BLECharacteristic *pCharacteristicTX; // 送信用キャラクタリスティッ
 bool deviceConnected = false;		  // デバイスの接続状態
 bool bAbnormal = false;				  // デバイス異常判定
 
+
 /* 通信データ */
 struct tmpData
 { // 計測データ
@@ -55,7 +56,7 @@ struct tmpSignal signaldata = {0xff, 0x00};
 /* タイマー制御用 */
 Ticker ticker;
 bool bReadyTicker = false;
-const int iIntervalTime = 1; // 計測間隔（10秒）
+const int iIntervalTime = 1; // 計測間隔（1秒）資料儲存間隔(整數)時間(秒)
 
 /* SDカードに読み取と記錄用 */
 void readFile(fs::FS &fs, const char *path)
