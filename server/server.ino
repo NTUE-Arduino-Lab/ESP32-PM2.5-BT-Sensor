@@ -9,7 +9,7 @@
 /* 基本属性定義  */
 #define DEVICE_NAME "ESP32" // デバイス名
 #define SPI_SPEED 115200	// SPI通信速度
-#define WIDTH_1 1024.0 
+#define WIDTH_1 1024.0
 #define WIDTH_2 2048.0
 #define WIDTH_3 3072.0
 #define WIDTH_4 4096.0
@@ -30,11 +30,10 @@ bool bAbnormal = false;				  // デバイス異常判定
 struct tmpData
 { // 計測データ
 	double pmData;
-	
 };
 struct tmpData data;
 double bandWidth = WIDTH_3; //位寬調整(訊號佔據的寬度)
-float coef = 700; //係數誤差調整
+float coef = 700;			//係數誤差調整
 int incomeByte[7];
 int sensorData;
 int z = 0;
@@ -277,10 +276,11 @@ void doMainProcess()
 				Serial.print("ug/m3 ");
 				Serial.println();
 				data.pmData = (double)c;
-				// char buff[200];
-				// sprintf(buff,)
-				// appendFile(SD, "/hello.txt", );
-				// readFile(SD, "/hello.txt");
+				char buff[20];
+				sprintf(buff, "%f", c);
+				appendFile(SD, "/hello.txt", buff);
+				appendFile(SD, "/hello.txt", "\n");
+				readFile(SD, "/hello.txt");
 			}
 			else
 			{
