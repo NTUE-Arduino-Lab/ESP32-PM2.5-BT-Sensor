@@ -11,8 +11,8 @@
 /* シグナル種別 */
 #define SIGNAL_ERROR 'E' // (Error:異常発生)
 
-#define OLED_SDA 22
-#define OLED_SCL 23
+#define OLED_SDA 22  //OLED資料傳輸控制腳位
+#define OLED_SCL 23  //OLED資料傳輸控制腳位
 
 Adafruit_SH1106 display(OLED_SDA, OLED_SCL);
 
