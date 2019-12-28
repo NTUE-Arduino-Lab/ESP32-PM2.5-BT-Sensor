@@ -26,7 +26,6 @@ BLECharacteristic *pCharacteristicTX; // 送信用キャラクタリスティッ
 bool deviceConnected = false;		  // デバイスの接続状態
 bool bAbnormal = false;				  // デバイス異常判定
 
-
 /* 通信データ */
 struct tmpData
 { // 計測データ
@@ -45,7 +44,7 @@ struct tmpSignal
 	char signalCode;
 };
 struct tmpSignal signaldata = {0xff, 0x00};
-
+uint8_t cardType;
 /* LEDピン */
 // const int ledPin = 16; // 接続ピン
 // int ledState = LOW;	// 状態
@@ -194,7 +193,7 @@ void doInitialize()
 		Serial.println("Card Mount Failed");
 		return;
 	}
-	uint8_t cardType = SD.cardType();
+	cardType = SD.cardType();
 
 	if (cardType == CARD_NONE)
 	{
@@ -277,11 +276,14 @@ void doMainProcess()
 				Serial.print("ug/m3 ");
 				Serial.println();
 				data.pmData = (double)c;
-				char buff[20];
-				sprintf(buff, "%f", c);
-				appendFile(SD, "/hello.txt", buff);
-				appendFile(SD, "/hello.txt", "\n");
-				readFile(SD, "/hello.txt");
+				if (cardType != CARD_NONE)
+				{
+					char buff[20];
+					sprintf(buff, "%f", c);
+					appendFile(SD, "/hello.txt", buff);
+					appendFile(SD, "/hello.txt", "\n");
+					readFile(SD, "/hello.txt");
+				}
 			}
 			else
 			{
