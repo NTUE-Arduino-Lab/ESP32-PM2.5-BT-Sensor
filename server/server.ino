@@ -44,7 +44,6 @@ struct tmpSignal
 	char signalCode;
 };
 struct tmpSignal signaldata = {0xff, 0x00};
-uint8_t cardType;
 /* LEDピン */
 // const int ledPin = 16; // 接続ピン
 // int ledState = LOW;	// 状態
@@ -193,11 +192,12 @@ void doInitialize()
 		Serial.println("Card Mount Failed");
 		return;
 	}
-	cardType = SD.cardType();
+	uint8_t cardType = SD.cardType();
 
 	if (cardType == CARD_NONE)
 	{
 		Serial.println("No SD card attached");
+
 		return;
 	}
 
@@ -276,14 +276,12 @@ void doMainProcess()
 				Serial.print("ug/m3 ");
 				Serial.println();
 				data.pmData = (double)c;
-				if (cardType != CARD_NONE)
-				{
-					char buff[20];
-					sprintf(buff, "%f", c);
-					appendFile(SD, "/hello.txt", buff);
-					appendFile(SD, "/hello.txt", "\n");
-					readFile(SD, "/hello.txt");
-				}
+
+				char buff[20];
+				sprintf(buff, "%f", c);
+				appendFile(SD, "/hello.txt", buff);
+				appendFile(SD, "/hello.txt", "\n");
+				readFile(SD, "/hello.txt");
 			}
 			else
 			{
