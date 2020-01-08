@@ -1,20 +1,14 @@
-#include <Adafruit_SH1106.h>
-#include <Adafruit_GFX.h>
 #include <BLEDevice.h>
 #include <Wire.h> // For I2C interface
 #include <Arduino.h>
 #include <SPI.h>
-
+#include <wifiboy_lib.h>
+#include "wb-sprite.h"
 /* 基本属性定義  */
 #define SPI_SPEED 115200 // SPI通信速度
 
 /* シグナル種別 */
 #define SIGNAL_ERROR 'E' // (Error:異常発生)
-
-#define OLED_SDA 22  //OLED資料傳輸控制腳位
-#define OLED_SCL 23  //OLED資料傳輸控制腳位
-
-Adafruit_SH1106 display(OLED_SDA, OLED_SCL);
 
 /* UUID定義 */
 BLEUUID serviceUUID("28b0883b-7ec3-4b46-8f64-8559ae036e4e");   // サービスのUUID
@@ -73,7 +67,39 @@ class advertisedDeviceCallbacks : public BLEAdvertisedDeviceCallbacks
 		}
 	}
 };
+void blit_double(double num, uint16_t x, uint16_t y)
+{
+	uint16_t d[5];
+	num = num * 100.0;
+	uint16_t convertNum = (uint16_t)num;
 
+	d[0] = convertNum / 10000;
+	d[1] = (convertNum - d[0] * 10000) / 1000;
+	d[2] = (convertNum - d[0] * 10000 - d[1] * 1000) / 100;
+	d[3] = (convertNum - d[0] * 10000 - d[1] * 1000 - d[2] * 100) / 10;
+	d[4] = convertNum - d[0] * 10000 - d[1] * 1000 - d[2] * 100 - d[3] * 10;
+
+	for (int i = 0; i < 5; i++)
+	{
+		if (i < 3)
+			wb_blitBuf8(d[i] * 8 + 120, 8, 240, x + i * 8, y, 8, 8, (uint8_t *)sprites); //將d[0]~d[4]逐個顯示並排列
+		if (i >= 3)
+			wb_blitBuf8(d[i] * 8 + 120, 8, 240, x + (i + 1) * 8, y, 8, 8, (uint8_t *)sprites);
+	}
+	wb_blitBuf8(104, 8, 240, x + 3 * 8, y, 8, 8, (uint8_t *)sprites);
+}
+void blit_str256(const char *str, int x, int y)
+{
+	for (int i = 0; i < strlen(str); i++)
+	{
+		if (str[i] >= '@' && str[i] <= ']')
+			wb_blitBuf8(8 * (str[i] - '@'), 0, 240, x + i * 8, y, 8, 8, (uint8_t *)sprites);
+		if (str[i] >= '!' && str[i] <= '>')
+			wb_blitBuf8(8 * (str[i] - '!'), 8, 240, x + i * 8, y, 8, 8, (uint8_t *)sprites);
+		if (str[i] == '?')
+			wb_blitBuf8(8 * 14, 16, 240, x + i * 8, y, 8, 8, (uint8_t *)sprites);
+	}
+}
 // Notify時のコールバック関数
 static void notifyCallback(BLERemoteCharacteristic *pBLERemoteCharacteristic,
 						   uint8_t *pData, size_t length, bool isNotify)
@@ -94,6 +120,10 @@ void setup()
 {
 	// 初期化処理を行ってBLEデバイスを初期化する
 	doInitialize();
+	wb_init(0);
+	wb_initBuf8();
+	for (int i = 0; i < 256; i++) // 定義 256色（唯一色庫）
+		wb_setPal8(i, wb_color565(standardColour[i][0], standardColour[i][1], standardColour[i][2]));
 	BLEDevice::init("");
 	Serial.println("Client application start...");
 
@@ -107,6 +137,7 @@ void setup()
 
 void loop()
 {
+	wb_clearBuf8();
 	// アドバタイジング受信時に一回だけサーバーに接続する
 	if (doConnect == true)
 	{
@@ -126,7 +157,9 @@ void loop()
 		// 測定値が有効かつ異常でなければOLEDに表示する
 		if (enableMeasurement && !bInAlarm)
 		{
-
+			blit_str256("PM2.5:", 0, 0);
+			blit_double(data.pmData, 56, 0);
+			blit_str256("UG/M^3", 0, 0);
 			enableMeasurement = false;
 		}
 	}
@@ -134,16 +167,10 @@ void loop()
 	{
 		BLEDevice::getScan()->start(0);
 	}
-	display.setTextSize(2);
-	display.setTextColor(WHITE);
-	display.setCursor(0, 0);
-	display.println("CURRENT");
-	display.println("PM2.5 :");
-	display.print(data.pmData);
-	display.println(" ug/m^3");
-	display.display();
-	delay(2000);
-	display.clearDisplay();
+	// blit_str256("PM2.5:", 40, 44);
+	// blit_double(data.pmData, 40, 60);
+	// blit_str256("UG/M^3", 40, 76);
+	wb_blit8();
 }
 
 /*  初期化処理  */
@@ -152,10 +179,7 @@ void doInitialize()
 	Serial.begin(SPI_SPEED);
 	pinMode(ledPin, OUTPUT);
 	digitalWrite(ledPin, HIGH);
-
 	Serial.println("BLE Client start ...");
-	display.begin(SH1106_SWITCHCAPVCC, 0x3C); 
-  	display.clearDisplay();
 }
 
 /*  準備処理  */
