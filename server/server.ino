@@ -179,7 +179,7 @@ void loop()
 		}
 	}
 }
-
+bool sd;
 /*  初期化処理  */
 void doInitialize()
 {
@@ -200,8 +200,11 @@ void doInitialize()
 
 		return;
 	}
-
-	Serial.print("SD Card Type: ");
+	else
+	{
+		sd = true;
+		Serial.print("SD Card Type: ");
+	}
 	if (cardType == CARD_MMC)
 	{
 		Serial.println("MMC");
@@ -277,11 +280,14 @@ void doMainProcess()
 				Serial.println();
 				data.pmData = (double)c;
 
-				char buff[20];
-				sprintf(buff, "%f", c);
-				appendFile(SD, "/hello.txt", buff);
-				appendFile(SD, "/hello.txt", "\n");
-				readFile(SD, "/hello.txt");
+				if (sd)
+				{
+					char buff[20];
+					sprintf(buff, "%f", c);
+					appendFile(SD, "/hello.txt", buff);
+					appendFile(SD, "/hello.txt", "\n");
+					readFile(SD, "/hello.txt");
+				}
 			}
 			else
 			{
