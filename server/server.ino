@@ -221,11 +221,12 @@ void doInitialize()
 	{
 		Serial.println("UNKNOWN");
 	}
-
-	uint64_t cardSize = SD.cardSize() / (1024 * 1024);
-	Serial.printf("SD Card Size: %lluMB\n", cardSize);
-
-	writeFile(SD, "/hello.txt", "Record Start:\n");
+	if (sd)
+	{
+		uint64_t cardSize = SD.cardSize() / (1024 * 1024);
+		Serial.printf("SD Card Size: %lluMB\n", cardSize);
+		writeFile(SD, "/hello.txt", "Record Start:\n");
+	}
 }
 
 /*  準備処理  */
