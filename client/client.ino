@@ -137,7 +137,6 @@ void setup()
 
 void loop()
 {
-	wb_clearBuf8();
 	// アドバタイジング受信時に一回だけサーバーに接続する
 	if (doConnect == true)
 	{
@@ -157,20 +156,20 @@ void loop()
 		// 測定値が有効かつ異常でなければOLEDに表示する
 		if (enableMeasurement && !bInAlarm)
 		{
-			blit_str256("PM2.5:", 0, 0);
-			blit_double(data.pmData, 56, 0);
-			blit_str256("UG/M^3", 0, 0);
+			wb_clearBuf8();
+			blit_str256("PM2.5:", 40, 44);
+			blit_double(data.pmData, 40, 60);
+			blit_str256("UG/M^3", 40, 76);
 			enableMeasurement = false;
+			wb_blit8();
 		}
 	}
 	else if (doScan)
 	{
 		BLEDevice::getScan()->start(0);
 	}
-	// blit_str256("PM2.5:", 40, 44);
-	// blit_double(data.pmData, 40, 60);
-	// blit_str256("UG/M^3", 40, 76);
-	wb_blit8();
+
+	
 }
 
 /*  初期化処理  */
