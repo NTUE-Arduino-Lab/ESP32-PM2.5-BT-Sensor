@@ -54,7 +54,7 @@ const int ledPin = 16; // 接続ピン
 /* タイマー制御用 */
 Ticker ticker;
 bool bReadyTicker = false;
-const int iIntervalTime = 1; // 計測間隔（1秒）資料儲存間隔(整數)時間(秒)
+const int iIntervalTime = 10; // 計測間隔（1秒）資料儲存間隔(整數)時間(秒)
 
 /* SDカードに読み取と記錄用 */
 void readFile(fs::FS &fs, const char *path)
@@ -137,13 +137,15 @@ static void kickRoutine()
 {
 	bReadyTicker = true;
 }
-
+unsigned long currentTime;
+unsigned long CD;
 /*****************************************************************************
  *                          Predetermined Sequence                           *
  *****************************************************************************/
 void setup()
 {
 	Serial.begin(2400);
+	currentTime = millis();
 	// 初期化処理を行ってBLEデバイスを初期化する
 	doInitialize();
 	BLEDevice::init(DEVICE_NAME);
@@ -165,9 +167,19 @@ void setup()
 	ticker.attach(iIntervalTime, kickRoutine);
 	// Serial.println("Waiting to connect ...");
 }
-
+bool sd;
 void loop()
 {
+	currentTime = millis();
+	if (sd && currentTime >= CD)
+	{
+		char buff[20];
+		sprintf(buff, "%f", data.pmData);
+		appendFile(SD, "/hello.txt", buff);
+		appendFile(SD, "/hello.txt", "\n");
+		readFile(SD, "/hello.txt");
+		CD += 60000;
+	}
 	// 接続が確立されていて異常でなければ
 	if (deviceConnected && !bAbnormal)
 	{
@@ -179,7 +191,6 @@ void loop()
 		}
 	}
 }
-bool sd;
 /*  初期化処理  */
 void doInitialize()
 {
@@ -280,15 +291,6 @@ void doMainProcess()
 				Serial.print("ug/m3 ");
 				Serial.println();
 				data.pmData = (double)c;
-
-				if (sd)
-				{
-					char buff[20];
-					sprintf(buff, "%f", c);
-					appendFile(SD, "/hello.txt", buff);
-					appendFile(SD, "/hello.txt", "\n");
-					readFile(SD, "/hello.txt");
-				}
 			}
 			else
 			{

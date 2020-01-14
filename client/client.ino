@@ -160,8 +160,8 @@ void loop()
 			blit_str256("PM2.5:", 40, 44);
 			blit_double(data.pmData, 40, 60);
 			blit_str256("UG/M^3", 40, 76);
-			enableMeasurement = false;
 			wb_blit8();
+			enableMeasurement = false;
 		}
 	}
 	else if (doScan)
