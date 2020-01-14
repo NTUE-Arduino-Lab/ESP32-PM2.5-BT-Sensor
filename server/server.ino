@@ -45,7 +45,7 @@ struct tmpSignal
 };
 struct tmpSignal signaldata = {0xff, 0x00};
 /* LEDピン */
-// const int ledPin = 16; // 接続ピン
+const int ledPin = 16; // 接続ピン
 // int ledState = LOW;	// 状態
 
 /* プッシュボタン */
@@ -185,8 +185,8 @@ void doInitialize()
 {
 	// Serial.begin(SPI_SPEED);
 	// pinMode(buttonPin, INPUT);
-	// pinMode(ledPin, OUTPUT);
-	// digitalWrite(ledPin, HIGH);
+	pinMode(ledPin, OUTPUT);
+	digitalWrite(ledPin, HIGH);
 	if (!SD.begin())
 	{
 		Serial.println("Card Mount Failed");
