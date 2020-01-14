@@ -177,7 +177,7 @@ void doInitialize()
 {
 	Serial.begin(SPI_SPEED);
 	pinMode(ledPin, OUTPUT);
-	digitalWrite(ledPin, HIGH);
+	digitalWrite(ledPin, LOW);
 	Serial.println("BLE Client start ...");
 }
 

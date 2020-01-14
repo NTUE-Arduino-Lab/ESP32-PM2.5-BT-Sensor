@@ -186,7 +186,7 @@ void doInitialize()
 	// Serial.begin(SPI_SPEED);
 	// pinMode(buttonPin, INPUT);
 	pinMode(ledPin, OUTPUT);
-	digitalWrite(ledPin, HIGH);
+	digitalWrite(ledPin, LOW);
 	if (!SD.begin())
 	{
 		Serial.println("Card Mount Failed");
